@@ -1,0 +1,1 @@
+web: gunicorn agro_ai_project.wsgi

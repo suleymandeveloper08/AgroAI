@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="tk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AgroAI - Professional Agronom Platformasy</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+<body>
+
+    <div class="bg-blur blur-1"></div>
+    <div class="bg-blur blur-2"></div>
+    <div class="bg-blur blur-3"></div>
+
+    <div class="container">
+        <header class="navbar">
+            <div class="logo">
+                <i class="fa-solid fa-wand-magic-sparkles"></i> Agro<span>AI</span>
+            </div>
+            <nav>
+                <a href="{% url 'home' %}" class="active"><i class="fa-solid fa-house"></i> Baş sahypa</a>
+                <a href="{% url 'history' %}"><i class="fa-solid fa-clock-rotate-left"></i> Barlag Geçmişi</a>
+            </nav>
+        </header>
+
+        <main class="main-content">
+            <div class="hero-section">
+                <div class="badge"><i class="fa-solid fa-bolt"></i> Gemini 2.5 Flash Tech</div>
+                <h1>Akylly <span class="text-gradient">Ýyladyşhana</span> Monitoringi</h1>
+                <p>Ösümligiň ýapraklaryndaky näsazlyklary, keselleri we dökün ýetmezçiliklerini birnäçe sekuntda anyklaň. Hasyllylygy ýokary götermek üçin emeli intellekt derman we ideg maslahatlaryny berer.</p>
+            </div>
+
+            <div class="upload-card">
+                <form method="POST" enctype="multipart/form-data" id="upload-form">
+                    {% csrf_token %}
+                    
+                    <div class="drop-zone" id="drop-zone">
+                        <div class="icon-circle">
+                            <i class="fa-solid fa-cloud-arrow-up upload-icon"></i>
+                        </div>
+                        <p class="drop-text">Suraty şu ýere süýräp taşlaň ýa-da <br><span>kompýuterden saýlaň</span></p>
+                        <input type="file" name="image" id="file-input" accept="image/*" required hidden>
+                    </div>
+<div class="camera-section" style="margin-bottom: 30px;">
+    <div style="display: flex; gap: 10px; margin-bottom: 15px;">
+        <button type="button" id="start-camera-btn" class="btn-submit" style="background: linear-gradient(135deg, #3b82f6, #1d4ed8);">
+            <i class="fa-solid fa-camera"></i> Kamerany Aç
+        </button>
+        <button type="button" id="capture-btn" class="btn-submit" style="background: linear-gradient(135deg, #ef4444, #b91c1c); display: none;">
+            <i class="fa-solid fa-circle-dot"></i> Surata Düşür
+        </button>
+    </div>
+
+    <div id="video-container" style="display: none; position: relative; width: 100%; border-radius: 20px; overflow: hidden; border: 2px solid var(--card-border); background: #000;">
+        <video id="webcam" autoplay playsinline style="width: 100%; display: block;"></video>
+        <canvas id="photo-canvas" style="display: none; width: 100%;"></canvas>
+        <div id="camera-feedback" style="position: absolute; top: 10px; left: 10px; background: rgba(16, 185, 129, 0.8); color: white; padding: 4px 10px; border-radius: 20px; font-size: 12px; display: none;">
+            <i class="fa-solid fa-check"></i> Surat Taýyn!
+        </div>
+    </div>
+</div>
+                    <div class="input-group">
+                        <label for="plant_type"><i class="fa-solid fa-seedling"></i> Ösümlik Görnüşini Saýlaň:</label>
+                        <select name="plant_type" id="plant_type">
+                            {% for value, name in form.fields.plant_type.choices %}
+                                <option value="{{ value }}">{{ name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <button type="submit" class="btn-submit" id="submit-btn">
+                        <i class="fa-solid fa-magnifying-glass-chart"></i> AI Analizini Başlat
+                    </button>
+                </form>
+            </div>
+
+            {% if result %}
+            <div class="result-section">
+                <div class="result-header">
+                    <h2><i class="fa-solid fa-square-poll-horizontal"></i> Barlag Analiz Hasabaty</h2>
+                    <span class="date-badge"><i class="fa-solid fa-calendar-days"></i> {{ result.created_at|date:"Y-m-d H:i" }}</span>
+                </div>
+
+                <div class="result-grid">
+                    <div class="result-image-box">
+                        <img src="{{ result.image.url }}" alt="Barlanan ösümlik">
+                        <div class="image-overlay-info">
+                            <strong>{{ result.get_plant_type_display }}</strong>
+                        </div>
+                    </div>
+
+                    <div class="ai-report-box">
+                        <div class="report-block">
+                            <div class="block-title status-title"><i class="fa-solid fa-shield-halved"></i> AI Tarapyndan Kesgitlenen Status:</div>
+                            <div class="status-value">{{ result.status }}</div>
+                        </div>
+
+                        <div class="report-block">
+                            <div class="block-title"><i class="fa-solid fa-microscope"></i> Keseliň / Ýagdaýyň Analizi:</div>
+                            <div class="block-content">{{ result.ai_analysis|linebreaks }}</div>
+                        </div>
+
+                        <div class="report-block priority-block">
+                            <div class="block-title text-green"><i class="fa-solid fa-kit-medical"></i> Agronomik Bejergi Meýilnamasy (Maslahat):</div>
+                            <div class="block-content">{{ result.treatment_plan|linebreaks }}</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+        </main>
+    </div>
+
+    <div class="loader-wrapper" id="loader-wrapper">
+        <div class="spinner"></div>
+        <p>AI Suraty Analiz Edýär, Garaşyň...</p>
+    </div>
+
+    <script src="{% static 'js/main.js' %}"></script>
+</body>
+</html>
