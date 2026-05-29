@@ -1,0 +1,14 @@
+{
+  "builds": [
+    {
+      "src": "agro_ai_project/wsgi.py",
+      "use": "@vercel/python"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/(.*)",
+      "dest": "agro_ai_project/wsgi.py"
+    }
+  ]
+}
